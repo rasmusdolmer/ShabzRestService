@@ -14,7 +14,7 @@ namespace ShabzSmartLock.Controllers
     {
         public static List<Lock> LockList = new List<Lock>()
         {
-            new Lock(5, false, new List<Log>()
+            new Lock(5, true, new List<Log>()
             {
                 new Log(1,"e","j"),
                 new Log(2,"e","d"),

@@ -13,10 +13,7 @@ namespace ShabzSmartLock.Controllers
     [ApiController]
     public class LogController : ControllerBase
     {
-        public static List<Log> LogList = new List<Log>()
-        {
-            new Log(2, "29-11-2018 10:00", "Locked")
-        };
+        public static List<Log> LogList = new List<Log>();
 
         // GET: api/Log
         [HttpGet]
