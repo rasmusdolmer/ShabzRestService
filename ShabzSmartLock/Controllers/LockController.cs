@@ -14,11 +14,11 @@ namespace ShabzSmartLock.Controllers
     {
         public static List<Lock> LockList = new List<Lock>()
         {
-            new Lock(5, true, new List<Log>()
+            new Lock("Hoveddør", "123abc", true, DateTime.Parse("16/07/98 15:00:00"),new List<Log>()
             {
-                new Log(1,"e","j"),
-                new Log(2,"e","d"),
-                new Log(3,"i","g")
+                new Log(1,DateTime.Now, false),
+                new Log(2,DateTime.Now, true),
+                new Log(3,DateTime.Now, false)
             })
         };
 
@@ -80,20 +80,22 @@ namespace ShabzSmartLock.Controllers
 
         // POST: api/Lock
         [HttpPost]
-        public void Post(int AccountId)
+        public void Post(Lock l)
         {
-            LockList.Add(new Lock(AccountId, false, new List<Log>()));
+            LockList.Add(new Lock(l.Name, l.AccessCode, false, l.DateRegistered, new List<Log>()));
         }
 
         // PUT: api/Lock/5
         [HttpPut("{id}")]
-        public void Put(int id, int AccountId)
+        public void Put(int id, string name, string accessCode, bool status, DateTime dateRegistered)
         {
             var lockToUpdate = LockList.FirstOrDefault(l => l.Id == id);
             if (lockToUpdate != null)
             {
-                lockToUpdate.AccountId = AccountId;
+                lockToUpdate.Name = name;
+                lockToUpdate.AccessCode = accessCode;
                 lockToUpdate.Status = !lockToUpdate.Status;
+                lockToUpdate.DateRegistered = dateRegistered;
                 lockToUpdate.LogList = lockToUpdate.LogList;
             }
             else

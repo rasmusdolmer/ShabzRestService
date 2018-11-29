@@ -14,11 +14,11 @@ namespace ShabzSmartLock.Controllers
     {
         private static List<Account> AccountList = new List<Account>()
         {
-            new Account("Frederik"),
-            new Account("Kian"),
-            new Account("Lucas"),
-            new Account("Marcus"),
-            new Account("Rasmus")
+            new Account("Frederik","f@f.f", 1),
+            new Account("Kian","k@k.k", 2),
+            new Account("Lucas","l@l.l", 3),
+            new Account("Marcus","m@m.m", 4),
+            new Account("Rasmus","r@r.r", 5)
         };
 
         // GET: api/Account
@@ -48,16 +48,16 @@ namespace ShabzSmartLock.Controllers
         [HttpGet("{id}/locks", Name = "GetAccountsLocks")]
         public Lock GetAccountsLocks(int id)
         {
-            var AccountLock = LockController.LockList.FirstOrDefault(l => l.AccountId == id);
+            //var AccountLock = LockController.LockList.FirstOrDefault(l => l.AccountId == id);
 
-            if (AccountLock != null)
-            {
-                return AccountLock;
-            }
-            else
-            {
-                throw new Exception("Denne bruger har ingen tilknyttede locks");
-            }
+            //if (AccountLock != null)
+            //{
+            //    return AccountLock;
+            //}
+            //else
+            //{
+            //    throw new Exception("Denne bruger har ingen tilknyttede locks");
+            //}
         }
 
         // GET: api/Account/5
@@ -80,17 +80,19 @@ namespace ShabzSmartLock.Controllers
         [HttpPost]
         public void Post(Account u)
         {
-            AccountList.Add(new Account(u.Name));
+            AccountList.Add(new Account(u.Name,u.Email,u.PrimaryLock));
         }
 
         // PUT: api/Account/5
         [HttpPut("{id}")]
-        public void Put(int id, string name)
+        public void Put(int id, string name, string email, int primaryLock)
         {
             var AccountToUpdate = AccountList.FirstOrDefault(u => u.Id == id);
             if (AccountToUpdate != null)
             {
                 AccountToUpdate.Name = name;
+                AccountToUpdate.Email = email;
+                AccountToUpdate.PrimaryLock = primaryLock;
             }
             else
             {
