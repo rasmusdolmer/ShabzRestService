@@ -35,7 +35,7 @@ namespace ShabzSmartLock.Controllers
         [HttpPost]
         public void Post([FromBody] Log log)
         {
-            LogList.Add(new Log(log.UserId, log.Date, log.Status));
+            LogList.Add(new Log(log.AccountId, log.Date, log.Status));
         }
 
         // PUT: api/Log/5
@@ -45,7 +45,7 @@ namespace ShabzSmartLock.Controllers
             var logToUpdate = LogList.FirstOrDefault(l => l.Id == id);
             if (logToUpdate != null)
             {
-                logToUpdate.UserId = log.UserId;
+                logToUpdate.AccountId = log.AccountId;
                 logToUpdate.Status = log.Status;
                 logToUpdate.Date = log.Date;
             }

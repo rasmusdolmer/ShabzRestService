@@ -10,33 +10,33 @@ namespace ShabzSmartLock.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AccountController : ControllerBase
     {
-        private static List<User> UserList = new List<User>()
+        private static List<Account> AccountList = new List<Account>()
         {
-            new User("Frederik"),
-            new User("Kian"),
-            new User("Lucas"),
-            new User("Marcus"),
-            new User("Rasmus")
+            new Account("Frederik"),
+            new Account("Kian"),
+            new Account("Lucas"),
+            new Account("Marcus"),
+            new Account("Rasmus")
         };
 
-        // GET: api/User
+        // GET: api/Account
         [HttpGet]
-        public List<User> Get()
+        public List<Account> Get()
         {
-            return UserList;
+            return AccountList;
         }
 
-        // GET: api/User/5
-        [HttpGet("{id}", Name = "GetUser")]
-        public User GetUser(int id)
+        // GET: api/Account/5
+        [HttpGet("{id}", Name = "GetAccount")]
+        public Account GetAccount(int id)
         {
-            var user = UserList.FirstOrDefault(l => l.Id == id);
+            var Account = AccountList.FirstOrDefault(l => l.Id == id);
 
-            if (user != null)
+            if (Account != null)
             {
-                return user;
+                return Account;
             }
             else
             {
@@ -44,15 +44,15 @@ namespace ShabzSmartLock.Controllers
             }
         }
 
-        // GET: api/User/5
-        [HttpGet("{id}/locks", Name = "GetUsersLocks")]
-        public Lock GetUsersLocks(int id)
+        // GET: api/Account/5
+        [HttpGet("{id}/locks", Name = "GetAccountsLocks")]
+        public Lock GetAccountsLocks(int id)
         {
-            var userLock = LockController.LockList.FirstOrDefault(l => l.UserId == id);
+            var AccountLock = LockController.LockList.FirstOrDefault(l => l.AccountId == id);
 
-            if (userLock != null)
+            if (AccountLock != null)
             {
-                return userLock;
+                return AccountLock;
             }
             else
             {
@@ -60,15 +60,15 @@ namespace ShabzSmartLock.Controllers
             }
         }
 
-        // GET: api/User/5
-        [HttpGet("{id}/logs", Name = "GetUsersLogs")]
-        public List<Log> GetUsersLogs(int id)
+        // GET: api/Account/5
+        [HttpGet("{id}/logs", Name = "GetAccountsLogs")]
+        public List<Log> GetAccountsLogs(int id)
         {
-            var userLogs = (from log in LogController.LogList where log.UserId == id select log).ToList();
+            var AccountLogs = (from log in LogController.LogList where log.AccountId == id select log).ToList();
 
-            if (userLogs.Count > 0)
+            if (AccountLogs.Count > 0)
             {
-                return userLogs;
+                return AccountLogs;
             }
             else
             {
@@ -76,21 +76,21 @@ namespace ShabzSmartLock.Controllers
             }
         }
 
-        // POST: api/User
+        // POST: api/Account
         [HttpPost]
-        public void Post(User u)
+        public void Post(Account u)
         {
-            UserList.Add(new User(u.Name));
+            AccountList.Add(new Account(u.Name));
         }
 
-        // PUT: api/User/5
+        // PUT: api/Account/5
         [HttpPut("{id}")]
         public void Put(int id, string name)
         {
-            var userToUpdate = UserList.FirstOrDefault(u => u.Id == id);
-            if (userToUpdate != null)
+            var AccountToUpdate = AccountList.FirstOrDefault(u => u.Id == id);
+            if (AccountToUpdate != null)
             {
-                userToUpdate.Name = name;
+                AccountToUpdate.Name = name;
             }
             else
             {
@@ -102,10 +102,10 @@ namespace ShabzSmartLock.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            var userToDelete = UserList.FirstOrDefault(u => u.Id == id);
-            if (userToDelete != null)
+            var AccountToDelete = AccountList.FirstOrDefault(u => u.Id == id);
+            if (AccountToDelete != null)
             {
-                UserList.Remove(userToDelete);
+                AccountList.Remove(AccountToDelete);
             }
             else
             {

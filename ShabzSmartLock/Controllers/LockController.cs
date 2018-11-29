@@ -80,19 +80,19 @@ namespace ShabzSmartLock.Controllers
 
         // POST: api/Lock
         [HttpPost]
-        public void Post(int userId)
+        public void Post(int AccountId)
         {
-            LockList.Add(new Lock(userId, false, new List<Log>()));
+            LockList.Add(new Lock(AccountId, false, new List<Log>()));
         }
 
         // PUT: api/Lock/5
         [HttpPut("{id}")]
-        public void Put(int id, int userId)
+        public void Put(int id, int AccountId)
         {
             var lockToUpdate = LockList.FirstOrDefault(l => l.Id == id);
             if (lockToUpdate != null)
             {
-                lockToUpdate.UserId = userId;
+                lockToUpdate.AccountId = AccountId;
                 lockToUpdate.Status = !lockToUpdate.Status;
                 lockToUpdate.LogList = lockToUpdate.LogList;
             }

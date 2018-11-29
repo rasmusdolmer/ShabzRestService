@@ -8,9 +8,9 @@ namespace ShabzSmartLock.Model
     public class Log
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
-        public string Date { get; set; }
-        public string Status { get; set; }
+        public int AccountId { get; set; }
+        public DateTime Date { get; set; }
+        public bool Status { get; set; }
         private static int NextId = 1;
 
         public Log()
@@ -18,12 +18,12 @@ namespace ShabzSmartLock.Model
             
         }
 
-        public Log(int userId, string date, string status)
+        public Log(int accountId, DateTime date, bool status)
         {
-            Id = NextId++;
-            UserId = userId;
+            Id = NextId;
+            AccountId = accountId;
             Date = date;
             Status = status;
-        }
+        }}
     }
 }
