@@ -20,7 +20,7 @@ namespace ShabzSmartLock.Model
 
         public Account(string name, string email, int primaryLock)
         {
-            Id = NextId;
+            Id = NextId++;
             Name = name;
             Email = email;
             PrimaryLock = primaryLock;

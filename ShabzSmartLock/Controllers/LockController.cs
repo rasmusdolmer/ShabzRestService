@@ -30,7 +30,7 @@ namespace ShabzSmartLock.Controllers
         }
 
         // GET: api/Lock/5
-        [HttpGet("{id}", Name = "GetLock")]      
+        [HttpGet("{id}", Name = "GetLock")]
         public Lock Get(int id)
         {
             var singleLock = LockList.FirstOrDefault(l => l.Id == id);
@@ -39,10 +39,8 @@ namespace ShabzSmartLock.Controllers
             {
                 return singleLock;
             }
-            else
-            {
-                throw new Exception("Der findes ikke en Lås med dette id.");
-            }
+
+            return null;
         }
 
         // GET: api/Lock/5
@@ -55,10 +53,8 @@ namespace ShabzSmartLock.Controllers
             {
                 return singleLock.LogList;
             }
-            else
-            {
-                throw new Exception("Der findes ikke en Lås med dette id.");
-            }
+
+            return null;
         }
 
         // GET: api/Lock/5
@@ -72,10 +68,8 @@ namespace ShabzSmartLock.Controllers
                 var singleLog = singleLock.LogList.FirstOrDefault(l => l.Id == logId);
                 return singleLog;
             }
-            else
-            {
-                throw new Exception("Der findes ikke en Lås med dette id.");
-            }
+
+            return null;
         }
 
         // POST: api/Lock
@@ -87,7 +81,7 @@ namespace ShabzSmartLock.Controllers
 
         // PUT: api/Lock/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string accessCode, bool status, DateTime dateRegistered)
+        public string Put(int id, string name, string accessCode, bool status, DateTime dateRegistered)
         {
             var lockToUpdate = LockList.FirstOrDefault(l => l.Id == id);
             if (lockToUpdate != null)
@@ -97,26 +91,22 @@ namespace ShabzSmartLock.Controllers
                 lockToUpdate.Status = !lockToUpdate.Status;
                 lockToUpdate.DateRegistered = dateRegistered;
                 lockToUpdate.LogList = lockToUpdate.LogList;
+                return "Låsen med id: " + id + " blev opdateret";
             }
-            else
-            {
-                throw new Exception("Der findes ikke en Lås med dette id.");
-            }
+            return "Der findes ikke en lock med dette id";
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public string Delete(int id)
         {
             var lockToDelete = LockList.FirstOrDefault(l => l.Id == id);
             if (lockToDelete != null)
             {
                 LockList.Remove(lockToDelete);
+                return "Låsen med id: " + id + " blev slettet";
             }
-            else
-            {
-                throw new Exception("Der findes ikke en Lås med dette id.");
-            }
+            return "Der findes ikke en Lås med dette id";
         }
     }
 }

@@ -20,10 +20,10 @@ namespace ShabzSmartLock.Model
 
         public Log(int accountId, DateTime date, bool status)
         {
-            Id = NextId;
+            Id = NextId++;
             AccountId = accountId;
             Date = date;
             Status = status;
-        }}
+        }
     }
 }

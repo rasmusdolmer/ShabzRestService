@@ -22,7 +22,7 @@ namespace ShabzSmartLock.Model
 
         public Lock(string name, string accessCode, bool status, DateTime dateRegistered, List<Log> logList)
         {
-            Id = NextId;
+            Id = NextId++;
             Name = name;
             AccessCode = accessCode;
             Status = status;

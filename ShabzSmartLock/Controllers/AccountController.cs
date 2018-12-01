@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ShabzSmartLock.Model;
 
 namespace ShabzSmartLock.Controllers
@@ -28,20 +30,30 @@ namespace ShabzSmartLock.Controllers
             return AccountList;
         }
 
-        // GET: api/Account/5
-        [HttpGet("{id}", Name = "GetAccount")]
-        public Account GetAccount(int id)
+        // GET: api/Account/1
+        [HttpGet]
+        [Route("{input}")]
+        public Account GetAccount(string input)
         {
-            var Account = AccountList.FirstOrDefault(l => l.Id == id);
+            if (input.Contains("@"))
+            {
+                var AccountEmail = AccountList.FirstOrDefault(a => a.Email == input);
 
-            if (Account != null)
-            {
-                return Account;
+                if (AccountEmail != null)
+                {
+                    return AccountEmail;
+                }
+
+                return null;
             }
-            else
+            var AccountId = AccountList.FirstOrDefault(a => a.Id.ToString() == input);
+
+            if (AccountId != null)
             {
-                throw new Exception("Der findes ikke en bruger med dette id.");
+                return AccountId;
             }
+
+            return null;
         }
 
         // GET: api/Account/5
@@ -58,6 +70,7 @@ namespace ShabzSmartLock.Controllers
             //{
             //    throw new Exception("Denne bruger har ingen tilknyttede locks");
             //}
+            return null;
         }
 
         // GET: api/Account/5
@@ -70,22 +83,19 @@ namespace ShabzSmartLock.Controllers
             {
                 return AccountLogs;
             }
-            else
-            {
-                throw new Exception("Denne bruger har ingen tilknyttede logs");
-            }
+            return null;
         }
 
         // POST: api/Account
         [HttpPost]
         public void Post(Account u)
         {
-            AccountList.Add(new Account(u.Name,u.Email,u.PrimaryLock));
+            AccountList.Add(new Account(u.Name, u.Email, u.PrimaryLock));
         }
 
         // PUT: api/Account/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string email, int primaryLock)
+        public string Put(int id, string name, string email, int primaryLock)
         {
             var AccountToUpdate = AccountList.FirstOrDefault(u => u.Id == id);
             if (AccountToUpdate != null)
@@ -93,26 +103,25 @@ namespace ShabzSmartLock.Controllers
                 AccountToUpdate.Name = name;
                 AccountToUpdate.Email = email;
                 AccountToUpdate.PrimaryLock = primaryLock;
+                return "Brugeren med id: " + id + " blev opdateret";
             }
-            else
-            {
-                throw new Exception("Der findes ikke en bruger med dette id.");
-            }
+
+            return "Der findes ikke en bruger med dette id";
+
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public string Delete(int id)
         {
             var AccountToDelete = AccountList.FirstOrDefault(u => u.Id == id);
             if (AccountToDelete != null)
             {
                 AccountList.Remove(AccountToDelete);
+                return "Brugeren med id: " + id + " blev slettet";
             }
-            else
-            {
-                throw new Exception("Der findes ikke en bruger med dette id.");
-            }
+
+            return "Der findes ikke en bruger med dette id";
         }
     }
 }

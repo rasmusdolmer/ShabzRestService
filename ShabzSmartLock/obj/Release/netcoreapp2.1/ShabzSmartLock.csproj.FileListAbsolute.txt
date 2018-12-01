@@ -7,9 +7,9 @@ C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Relea
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.csproj.CoreCompileInputs.cache
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.RazorAssemblyInfo.cache
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.RazorAssemblyInfo.cs
-C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\UserSecretsAssemblyInfo.cs
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.AssemblyInfoInputs.cache
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.AssemblyInfo.cs
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.RazorTargetAssemblyInfo.cache
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.dll
 C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\ShabzSmartLock.pdb
+C:\Users\rasmu\Desktop\3. Semester\Shabz\ShabzSmartLock\ShabzSmartLock\obj\Release\netcoreapp2.1\UserSecretsAssemblyInfo.cs
