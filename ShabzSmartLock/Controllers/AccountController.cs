@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +16,8 @@ namespace ShabzSmartLock.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private const string Conn =
+            "Data Source=gruppe-3.database.windows.net;Initial Catalog=lager;User ID=goldmann;Password=Doodlejump123";
         private static List<Account> AccountList = new List<Account>()
         {
             new Account("Frederik","f@f.f", 1),
@@ -27,6 +31,24 @@ namespace ShabzSmartLock.Controllers
         [HttpGet]
         public List<Account> Get()
         {
+            AccountList.Clear();
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
+            {
+                dbConnection.Open();
+
+
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_account", dbConnection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            AccountList.Add(new Account(Convert.ToInt32(reader[0]), reader[1].ToString(), reader[2].ToString(), Convert.ToInt32(reader[3])));
+                        }
+                    }
+                }
+            }
+
             return AccountList;
         }
 
@@ -35,93 +57,149 @@ namespace ShabzSmartLock.Controllers
         [Route("{input}")]
         public Account GetAccount(string input)
         {
-            if (input.Contains("@"))
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
-                var AccountEmail = AccountList.FirstOrDefault(a => a.Email == input);
-
-                if (AccountEmail != null)
+                dbConnection.Open();
+                if (int.TryParse(input, out int lockId))
                 {
-                    return AccountEmail;
+                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_account WHERE id = @id", dbConnection))
+                    {
+                        command.Parameters.AddWithValue("@id", Convert.ToInt32(input));
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Account lås = new Account(Convert.ToInt32(reader[0]), reader[1].ToString(), reader[2].ToString(), Convert.ToInt32(reader[3]));
+
+                                return lås;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_account WHERE email = @email", dbConnection))
+                    {
+                        command.Parameters.AddWithValue("@email", input);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Account lås = new Account(reader[1].ToString(), reader[2].ToString(), Convert.ToInt32(reader[3]));
+
+                                return lås;
+                            }
+                        }
+                    }
                 }
 
                 return null;
             }
-            var AccountId = AccountList.FirstOrDefault(a => a.Id.ToString() == input);
-
-            if (AccountId != null)
-            {
-                return AccountId;
-            }
-
-            return null;
-        }
-
-        // GET: api/Account/5
-        [HttpGet("{id}/locks", Name = "GetAccountsLocks")]
-        public Lock GetAccountsLocks(int id)
-        {
-            //var AccountLock = LockController.LockList.FirstOrDefault(l => l.AccountId == id);
-
-            //if (AccountLock != null)
-            //{
-            //    return AccountLock;
-            //}
-            //else
-            //{
-            //    throw new Exception("Denne bruger har ingen tilknyttede locks");
-            //}
-            return null;
         }
 
         // GET: api/Account/5
         [HttpGet("{id}/logs", Name = "GetAccountsLogs")]
         public List<Log> GetAccountsLogs(int id)
         {
-            var AccountLogs = (from log in LogController.LogList where log.AccountId == id select log).ToList();
-
-            if (AccountLogs.Count > 0)
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
-                return AccountLogs;
+                dbConnection.Open();
+
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_log WHERE AccountId = @accountId", dbConnection))
+                {
+                    command.Parameters.AddWithValue("@accountId", id);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            LogController.LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3])));
+                        }
+                    }
+                }
             }
-            return null;
+            return LogController.LogList;
+        }
+
+        // GET: api/Account
+        [HttpGet("logs/statistik")]
+        public void GetStatistic(int id)
+        {
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
+            {
+                dbConnection.Open();
+
+                using (SqlCommand command = new SqlCommand("SELECT AccountId, COUNT(*) FROM shabz_log GROUP BY AccountId", dbConnection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
         }
 
         // POST: api/Account
         [HttpPost]
-        public void Post(Account u)
+        public void Post(Account ac)
         {
-            AccountList.Add(new Account(u.Name, u.Email, u.PrimaryLock));
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
+            {
+                dbConnection.Open();
+
+                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_account (email, name, PrimaryLockId) VALUES (@email, @name, @primaryLockId)", dbConnection))
+                {
+                    command.Parameters.AddWithValue("@email", ac.Email);
+                    command.Parameters.AddWithValue("@name", ac.Name);
+                    command.Parameters.AddWithValue("@primaryLockId", ac.PrimaryLockId);
+               
+                    command.ExecuteNonQuery();
+
+                    AccountList.Add(new Account(ac.Email, ac.Name, ac.PrimaryLockId));
+                }
+            }
         }
 
         // PUT: api/Account/5
         [HttpPut("{id}")]
-        public string Put(int id, string name, string email, int primaryLock)
+        public void Put(int id, string name, string email, int primaryLock)
         {
-            var AccountToUpdate = AccountList.FirstOrDefault(u => u.Id == id);
-            if (AccountToUpdate != null)
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
-                AccountToUpdate.Name = name;
-                AccountToUpdate.Email = email;
-                AccountToUpdate.PrimaryLock = primaryLock;
-                return "Brugeren med id: " + id + " blev opdateret";
+                dbConnection.Open();
+
+
+                using (SqlCommand command = new SqlCommand("UPDATE shabz_account SET email = @email, name = @name, PrimaryLockId = @primaryLockId WHERE id = @id", dbConnection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.Add("@email", SqlDbType.Text);
+                    command.Parameters.Add("@name", SqlDbType.Text);
+                    command.Parameters.Add("@primaryLockId", SqlDbType.Int);
+
+                    command.ExecuteNonQuery();
+                    var AccountToUpdate = AccountList.FirstOrDefault(u => u.Id == id);
+                    AccountToUpdate.Name = name;
+                    AccountToUpdate.Email = email;
+                    AccountToUpdate.PrimaryLockId = primaryLock;
+                }
             }
-
-            return "Der findes ikke en bruger med dette id";
-
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public string Delete(int id)
+        public void Delete(int id)
         {
-            var AccountToDelete = AccountList.FirstOrDefault(u => u.Id == id);
-            if (AccountToDelete != null)
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
-                AccountList.Remove(AccountToDelete);
-                return "Brugeren med id: " + id + " blev slettet";
-            }
+                dbConnection.Open();
 
-            return "Der findes ikke en bruger med dette id";
+
+                using (SqlCommand command = new SqlCommand("DELETE from shabz_account WHERE id = @id", dbConnection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    command.ExecuteNonQuery();
+
+                    var AccountToDelete = AccountList.FirstOrDefault(u => u.Id == id);
+                    AccountList.Remove(AccountToDelete);
+                }
+            }
         }
     }
 }

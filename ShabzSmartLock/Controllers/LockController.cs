@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,101 +15,193 @@ namespace ShabzSmartLock.Controllers
     [ApiController]
     public class LockController : ControllerBase
     {
-        public static List<Lock> LockList = new List<Lock>()
-        {
-            new Lock("Hoveddør", "123abc", true, DateTime.Parse("16/07/98 15:00:00"),new List<Log>()
-            {
-                new Log(1,DateTime.Now, false),
-                new Log(2,DateTime.Now, true),
-                new Log(3,DateTime.Now, false)
-            })
-        };
+        private const string Conn =
+            "Data Source=gruppe-3.database.windows.net;Initial Catalog=lager;User ID=goldmann;Password=Doodlejump123";
+        public static List<Lock> LockList = new List<Lock>();
 
         // GET: api/Lock
         [HttpGet]
         public List<Lock> Get()
         {
+            LockList.Clear();
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
+            {
+                dbConnection.Open();
+
+
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock", dbConnection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Lock lås;
+                            if (reader[4].ToString().Length > 0)
+                            {
+                                lås = new Lock(Convert.ToInt32(reader[0]), reader[1].ToString(), reader[2].ToString(), Convert.ToBoolean(reader[3]), reader[4].ToString());
+                            }
+                            else
+                            {
+                                lås = new Lock(Convert.ToInt32(reader[0]), reader[1].ToString(), reader[2].ToString(), Convert.ToBoolean(reader[3]));
+                            }
+
+                            LockList.Add(lås);
+                        }
+                    }
+                }
+            }
+
             return LockList;
         }
 
         // GET: api/Lock/5
-        [HttpGet("{id}", Name = "GetLock")]
-        public Lock Get(int id)
+        [HttpGet("{input}", Name = "GetLock")]
+        public Lock Get(string input)
         {
-            var singleLock = LockList.FirstOrDefault(l => l.Id == id);
-
-            if (singleLock != null)
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
-                return singleLock;
+                dbConnection.Open();
+
+                if (int.TryParse(input, out int lockId))
+                {
+                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock WHERE id = @id", dbConnection))
+                    {
+                        command.Parameters.AddWithValue("@id", Convert.ToInt32(input));
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Lock lås;
+                                if (reader[4].ToString().Length > 0)
+                                {
+                                    lås = new Lock(Convert.ToInt32(reader[0]), reader[1].ToString(),
+                                        reader[2].ToString(), Convert.ToBoolean(reader[3]),
+                                        reader[4].ToString());
+                                }
+                                else
+                                {
+                                    lås = new Lock(Convert.ToInt32(reader[0]), reader[1].ToString(),
+                                        reader[2].ToString(), Convert.ToBoolean(reader[3]));
+                                }
+
+                                return lås;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock WHERE accessCode = @accessCode", dbConnection))
+                    {
+                        command.Parameters.AddWithValue("@accessCode", input);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Lock lås;
+                                if (reader[4].ToString().Length > 0)
+                                {
+                                    lås = new Lock(Convert.ToInt32(reader[0]), reader[1].ToString(),
+                                        reader[2].ToString(), Convert.ToBoolean(reader[3]),
+                                        reader[4].ToString());
+                                }
+                                else
+                                {
+                                    lås = new Lock(Convert.ToInt32(reader[0]), reader[1].ToString(),
+                                        reader[2].ToString(), Convert.ToBoolean(reader[3]));
+                                }
+
+                                return lås;
+                            }
+                        }
+                    }
+                }
+
+                return null;
             }
-
-            return null;
         }
+        //// GET: api/Lock/5
+        //[HttpGet("{id}/log", Name = "GetLockLogList")]
+        //public List<Log> GetLockLogList(int id)
+        //{
+        //    var singleLock = LockList.FirstOrDefault(l => l.Id == id);
 
-        // GET: api/Lock/5
-        [HttpGet("{id}/log", Name = "GetLockLogList")]
-        public List<Log> GetLockLogList(int id)
-        {
-            var singleLock = LockList.FirstOrDefault(l => l.Id == id);
+        //    if (singleLock != null)
+        //    {
+        //        return singleLock.LogList;
+        //    }
 
-            if (singleLock != null)
-            {
-                return singleLock.LogList;
-            }
-
-            return null;
-        }
-
-        // GET: api/Lock/5
-        [HttpGet("{lockId}/log/{logId}", Name = "GetLockSingleLog")]
-        public Log GetLockSingleLog(int lockId, int logId)
-        {
-            var singleLock = LockList.FirstOrDefault(l => l.Id == lockId);
-
-            if (singleLock != null)
-            {
-                var singleLog = singleLock.LogList.FirstOrDefault(l => l.Id == logId);
-                return singleLog;
-            }
-
-            return null;
-        }
+        //    return null;
+        //}
 
         // POST: api/Lock
         [HttpPost]
         public void Post(Lock l)
         {
-            LockList.Add(new Lock(l.Name, l.AccessCode, false, l.DateRegistered, new List<Log>()));
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
+            {
+                dbConnection.Open();
+
+
+                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_lock (name, accessCode, status) VALUES (@name, @accessCode, @status)", dbConnection))
+                {
+                    command.Parameters.AddWithValue("@name", l.Name);
+                    command.Parameters.AddWithValue("@accessCode", l.AccessCode);
+                    command.Parameters.AddWithValue("@status", l.Status);
+
+                    command.ExecuteNonQuery();
+
+                    LockList.Add(new Lock(l.Name, l.AccessCode, l.Status));
+                }
+            }
         }
 
         // PUT: api/Lock/5
         [HttpPut("{id}")]
-        public string Put(int id, string name, string accessCode, bool status, DateTime dateRegistered)
+        public void Put(int id, string name, string accessCode, bool status, string dateRegistered)
         {
-            var lockToUpdate = LockList.FirstOrDefault(l => l.Id == id);
-            if (lockToUpdate != null)
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
-                lockToUpdate.Name = name;
-                lockToUpdate.AccessCode = accessCode;
-                lockToUpdate.Status = !lockToUpdate.Status;
-                lockToUpdate.DateRegistered = dateRegistered;
-                lockToUpdate.LogList = lockToUpdate.LogList;
-                return "Låsen med id: " + id + " blev opdateret";
+                dbConnection.Open();
+
+                using (SqlCommand command = new SqlCommand("UPDATE shabz_lock SET name = @name, accessCode = @accessCode, status = @status, dateRegistered = @dateRegistered WHERE id = @id", dbConnection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@name", name);
+                    command.Parameters.AddWithValue("@accessCode", accessCode);
+                    command.Parameters.AddWithValue("@status", status);
+                    command.Parameters.AddWithValue("@dateRegistered", DateTime.Parse(dateRegistered));
+
+                    command.ExecuteNonQuery();
+
+                    var lockToUpdate = LockList.FirstOrDefault(l => l.Id == id);
+                    lockToUpdate.Name = name;
+                    lockToUpdate.AccessCode = accessCode;
+                    lockToUpdate.Status = status;
+                    lockToUpdate.DateRegistered = dateRegistered;
+                }
             }
-            return "Der findes ikke en lock med dette id";
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public string Delete(int id)
+        public void Delete(int id)
         {
-            var lockToDelete = LockList.FirstOrDefault(l => l.Id == id);
-            if (lockToDelete != null)
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
-                LockList.Remove(lockToDelete);
-                return "Låsen med id: " + id + " blev slettet";
+                dbConnection.Open();
+
+
+                using (SqlCommand command = new SqlCommand("DELETE from shabz_lock WHERE id = @id", dbConnection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    command.ExecuteNonQuery();
+
+                    var lockToDelete = LockList.FirstOrDefault(l => l.Id == id);
+                    LockList.Remove(lockToDelete);
+                }
             }
-            return "Der findes ikke en Lås med dette id";
         }
     }
 }

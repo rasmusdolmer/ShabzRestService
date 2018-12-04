@@ -8,9 +8,9 @@ namespace ShabzSmartLock.Model
     public class Account
     {
         public int Id { get; set; }
-        public string Name { get; set; }
         public string Email { get; set; }
-        public int PrimaryLock { get; set; }
+        public string Name { get; set; }
+        public int PrimaryLockId { get; set; }
         private static int NextId = 1;
 
         public Account()
@@ -18,12 +18,19 @@ namespace ShabzSmartLock.Model
             
         }
 
-        public Account(string name, string email, int primaryLock)
+        public Account(string email, string name, int primaryLockId)
         {
             Id = NextId++;
-            Name = name;
             Email = email;
-            PrimaryLock = primaryLock;
+            Name = name;
+            PrimaryLockId = primaryLockId;
+        }
+        public Account(int id, string email, string name, int primaryLockId)
+        {
+            Id = id;
+            Email = email;
+            Name = name;
+            PrimaryLockId = primaryLockId;
         }
     }
 }

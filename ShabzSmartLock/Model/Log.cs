@@ -9,7 +9,7 @@ namespace ShabzSmartLock.Model
     {
         public int Id { get; set; }
         public int AccountId { get; set; }
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
         public bool Status { get; set; }
         private static int NextId = 1;
 
@@ -18,9 +18,17 @@ namespace ShabzSmartLock.Model
             
         }
 
-        public Log(int accountId, DateTime date, bool status)
+        public Log(int accountId, string date, bool status)
         {
             Id = NextId++;
+            AccountId = accountId;
+            Date = date;
+            Status = status;
+        }
+
+        public Log(int id, int accountId, string date, bool status)
+        {
+            Id = id;
             AccountId = accountId;
             Date = date;
             Status = status;
