@@ -64,7 +64,7 @@ namespace ShabzSmartLock.Controllers
 
                 if (int.TryParse(input, out int lockId))
                 {
-                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock WHERE id = @id", dbConnection))
+                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock WHERE Id = @id", dbConnection))
                     {
                         command.Parameters.AddWithValue("@id", Convert.ToInt32(input));
                         using (SqlDataReader reader = command.ExecuteReader())
@@ -91,7 +91,7 @@ namespace ShabzSmartLock.Controllers
                 }
                 else
                 {
-                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock WHERE accessCode = @accessCode", dbConnection))
+                    using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock WHERE AccessCode = @accessCode", dbConnection))
                     {
                         command.Parameters.AddWithValue("@accessCode", input);
                         using (SqlDataReader reader = command.ExecuteReader())
@@ -143,7 +143,7 @@ namespace ShabzSmartLock.Controllers
                 dbConnection.Open();
 
 
-                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_lock (name, accessCode, status) VALUES (@name, @accessCode, @status)", dbConnection))
+                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_lock (Name, AccessCode, Status) VALUES (@name, @accessCode, @status)", dbConnection))
                 {
                     command.Parameters.AddWithValue("@name", l.Name);
                     command.Parameters.AddWithValue("@accessCode", l.AccessCode);
@@ -158,27 +158,27 @@ namespace ShabzSmartLock.Controllers
 
         // PUT: api/Lock/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string accessCode, bool status, string dateRegistered)
+        public void Put(int id, Lock lck)
         {
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
 
-                using (SqlCommand command = new SqlCommand("UPDATE shabz_lock SET name = @name, accessCode = @accessCode, status = @status, dateRegistered = @dateRegistered WHERE id = @id", dbConnection))
+                using (SqlCommand command = new SqlCommand("UPDATE shabz_lock SET name = @name, accessCode = @accessCode, status = @status, DateRegistered = @dateRegistered WHERE id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@name", name);
-                    command.Parameters.AddWithValue("@accessCode", accessCode);
-                    command.Parameters.AddWithValue("@status", status);
-                    command.Parameters.AddWithValue("@dateRegistered", DateTime.Parse(dateRegistered));
+                    command.Parameters.AddWithValue("@name", lck.Name);
+                    command.Parameters.AddWithValue("@accessCode", lck.AccessCode);
+                    command.Parameters.AddWithValue("@status", lck.Status);
+                    command.Parameters.AddWithValue("@dateRegistered", DateTime.Parse(lck.DateRegistered));
 
                     command.ExecuteNonQuery();
 
-                    var lockToUpdate = LockList.FirstOrDefault(l => l.Id == id);
-                    lockToUpdate.Name = name;
-                    lockToUpdate.AccessCode = accessCode;
-                    lockToUpdate.Status = status;
-                    lockToUpdate.DateRegistered = dateRegistered;
+                    var lockToUpdate = LockList.FirstOrDefault(l => l.Id == lck.Id);
+                    lockToUpdate.Name = lck.Name;
+                    lockToUpdate.AccessCode = lck.AccessCode;
+                    lockToUpdate.Status = lck.Status;
+                    lockToUpdate.DateRegistered = lck.DateRegistered;
                 }
             }
         }
@@ -192,7 +192,7 @@ namespace ShabzSmartLock.Controllers
                 dbConnection.Open();
 
 
-                using (SqlCommand command = new SqlCommand("DELETE from shabz_lock WHERE id = @id", dbConnection))
+                using (SqlCommand command = new SqlCommand("DELETE from shabz_lock WHERE Id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
