@@ -150,33 +150,26 @@ namespace ShabzSmartLock.Controllers
                     command.Parameters.AddWithValue("@primaryLockId", ac.PrimaryLockId);
                
                     command.ExecuteNonQuery();
-
-                    AccountList.Add(new Account(ac.Email, ac.Name, ac.PrimaryLockId));
                 }
             }
         }
 
         // PUT: api/Account/5
         [HttpPut("{id}")]
-        public void Put(int id, string name, string email, int primaryLock)
+        public void Put(int id, Account ac)
         {
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
 
-
                 using (SqlCommand command = new SqlCommand("UPDATE shabz_account SET email = @email, name = @name, PrimaryLockId = @primaryLockId WHERE id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.Add("@email", SqlDbType.Text);
-                    command.Parameters.Add("@name", SqlDbType.Text);
-                    command.Parameters.Add("@primaryLockId", SqlDbType.Int);
+                    command.Parameters.AddWithValue("@email", ac.Email);
+                    command.Parameters.AddWithValue("@name", ac.Name);
+                    command.Parameters.AddWithValue("@primaryLockId", ac.PrimaryLockId);
 
                     command.ExecuteNonQuery();
-                    var AccountToUpdate = AccountList.FirstOrDefault(u => u.Id == id);
-                    AccountToUpdate.Name = name;
-                    AccountToUpdate.Email = email;
-                    AccountToUpdate.PrimaryLockId = primaryLock;
                 }
             }
         }
@@ -189,15 +182,11 @@ namespace ShabzSmartLock.Controllers
             {
                 dbConnection.Open();
 
-
                 using (SqlCommand command = new SqlCommand("DELETE from shabz_account WHERE id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
                     command.ExecuteNonQuery();
-
-                    var AccountToDelete = AccountList.FirstOrDefault(u => u.Id == id);
-                    AccountList.Remove(AccountToDelete);
                 }
             }
         }

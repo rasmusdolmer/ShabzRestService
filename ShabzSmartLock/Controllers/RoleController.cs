@@ -1,124 +1,124 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using ShabzSmartLock.Model;
 
 namespace ShabzSmartLock.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LogController : ControllerBase
+    public class RoleController : ControllerBase
     {
         private const string Conn =
             "Data Source=gruppe-3.database.windows.net;Initial Catalog=lager;User ID=goldmann;Password=Doodlejump123";
-        public static List<Log> LogList = new List<Log>();
+        private static List<Role> RoleList = new List<Role>();
 
-        // GET: api/Log
+        // GET: api/Role
         [HttpGet]
-        public List<Log> Get()
+        public List<Role> Get()
         {
-            LogList.Clear();
+            RoleList.Clear();
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
 
-
-                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_log", dbConnection))
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_role", dbConnection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3])));
+                            Role role = new Role(Convert.ToInt32(reader[0]), reader[1].ToString(), Convert.ToInt32(reader[2]), reader[3].ToString());
+
+                            RoleList.Add(role);
                         }
                     }
                 }
             }
-            return LogList;
+            return RoleList;
         }
 
-        // GET: api/Log/5
-        [HttpGet("{id}", Name = "GetLog")]
-        public Log GetSingleLog(int id)
+        // GET: api/Role/5
+        [HttpGet("{id}")]
+        public Role Get(int id)
         {
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
 
-
-                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_log WHERE id = @id", dbConnection))
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_role WHERE id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            Log log = new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3]));
+                            Role role = new Role(Convert.ToInt32(reader[0]), reader[1].ToString(), Convert.ToInt32(reader[2]), reader[3].ToString());
 
-                            return log;
+                            return role;
                         }
                     }
                 }
             }
-
             return null;
         }
 
-        // POST: api/Log
+        // POST: api/Role
         [HttpPost]
-        public void Post(Log log)
+        public void Post(Role role)
         {
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
 
-                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_log (AccountId, Date, Status) VALUES (@accountId, @date, @status)", dbConnection))
+
+                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_role (name, accessLevel, icon) VALUES (@name, @accessLevel, @icon)", dbConnection))
                 {
-                    command.Parameters.AddWithValue("@accountId", log.AccountId);
-                    command.Parameters.AddWithValue("@date", DateTime.Parse(log.Date));
-                    command.Parameters.AddWithValue("@status", log.Status);
+                    command.Parameters.AddWithValue("@name", role.Name);
+                    command.Parameters.AddWithValue("@accessLevel", role.AccessLevel);
+                    command.Parameters.AddWithValue("@icon", role.Icon);
+
                     command.ExecuteNonQuery();
                 }
             }
         }
 
-        // PUT: api/Log/5
+        // PUT: api/Role/5
         [HttpPut("{id}")]
-        public void Put(int id, Log log)
+        public void Put(int id, Role role)
         {
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
 
-                using (SqlCommand command = new SqlCommand("UPDATE shabz_log SET AccountId = @accountId, Date = @date, Status = @status WHERE id = @id", dbConnection))
+                using (SqlCommand command = new SqlCommand("UPDATE shabz_role SET name = @name, accessLevel = @accessLevel, icon = @icon WHERE id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@accountId", log.AccountId);
-                    command.Parameters.AddWithValue("@date", DateTime.Parse(log.Date));
-                    command.Parameters.AddWithValue("@status", log.Status);
+                    command.Parameters.AddWithValue("@name", role.Name);
+                    command.Parameters.AddWithValue("@accessLevel", role.AccessLevel);
+                    command.Parameters.AddWithValue("@icon", role.Icon);
+
                     command.ExecuteNonQuery();
                 }
             }
         }
 
-        // DELETE: api/Log
-        [HttpDelete]
+        // DELETE: api/ApiWithActions/5
+        [HttpDelete("{id}")]
         public void Delete(int id)
         {
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
 
-
-                using (SqlCommand command = new SqlCommand("DELETE from shabz_log WHERE id = @id", dbConnection))
+                using (SqlCommand command = new SqlCommand("DELETE from shabz_role WHERE Id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
+
                     command.ExecuteNonQuery();
                 }
             }

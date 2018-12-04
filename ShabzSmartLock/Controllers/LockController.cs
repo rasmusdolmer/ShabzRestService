@@ -28,7 +28,6 @@ namespace ShabzSmartLock.Controllers
             {
                 dbConnection.Open();
 
-
                 using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock", dbConnection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
@@ -150,8 +149,6 @@ namespace ShabzSmartLock.Controllers
                     command.Parameters.AddWithValue("@status", l.Status);
 
                     command.ExecuteNonQuery();
-
-                    LockList.Add(new Lock(l.Name, l.AccessCode, l.Status));
                 }
             }
         }
@@ -173,12 +170,6 @@ namespace ShabzSmartLock.Controllers
                     command.Parameters.AddWithValue("@dateRegistered", DateTime.Parse(lck.DateRegistered));
 
                     command.ExecuteNonQuery();
-
-                    var lockToUpdate = LockList.FirstOrDefault(l => l.Id == lck.Id);
-                    lockToUpdate.Name = lck.Name;
-                    lockToUpdate.AccessCode = lck.AccessCode;
-                    lockToUpdate.Status = lck.Status;
-                    lockToUpdate.DateRegistered = lck.DateRegistered;
                 }
             }
         }
@@ -197,9 +188,6 @@ namespace ShabzSmartLock.Controllers
                     command.Parameters.AddWithValue("@id", id);
 
                     command.ExecuteNonQuery();
-
-                    var lockToDelete = LockList.FirstOrDefault(l => l.Id == id);
-                    LockList.Remove(lockToDelete);
                 }
             }
         }
