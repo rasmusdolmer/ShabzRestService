@@ -123,5 +123,20 @@ namespace ShabzSmartLock.Controllers
                 }
             }
         }
+
+        // DELETE: api/Log
+        [HttpDelete]
+        public void DeleteAll()
+        {
+            using (SqlConnection dbConnection = new SqlConnection(Conn))
+            {
+                dbConnection.Open();
+
+                using (SqlCommand command = new SqlCommand("DELETE from shabz_log", dbConnection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
