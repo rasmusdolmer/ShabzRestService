@@ -26,7 +26,7 @@ namespace ShabzSmartLock.Controllers
             {
                 dbConnection.Open();
 
-                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_role", dbConnection))
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_lock_account", dbConnection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
