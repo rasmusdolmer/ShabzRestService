@@ -85,7 +85,7 @@ namespace ShabzSmartLock.Controllers
                         {
                             while (reader.Read())
                             {
-                                Account lås = new Account(reader[1].ToString(), reader[2].ToString(), Convert.ToInt32(reader[3]));
+                                Account lås = new Account(Convert.ToInt32(reader[0]), reader[1].ToString(), reader[2].ToString(), Convert.ToInt32(reader[3]));
 
                                 return lås;
                             }

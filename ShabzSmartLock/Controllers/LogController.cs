@@ -21,15 +21,14 @@ namespace ShabzSmartLock.Controllers
 
         // GET: api/Log
         [HttpGet]
-        public List<Log> Get()
+        public List<Log> Get(int count)
         {
             LogList.Clear();
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
-
-
-                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_log", dbConnection))
+                count = 1;
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_log ORDER BY Date", dbConnection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -44,31 +43,50 @@ namespace ShabzSmartLock.Controllers
         }
 
         // GET: api/Log/5
-        [HttpGet("{id}", Name = "GetLog")]
-        public Log GetSingleLog(int id)
+        [HttpGet("{count}", Name = "GetLog")]
+        public List<Log> GetSingleLog(int count)
         {
+            LogList.Clear();
             using (SqlConnection dbConnection = new SqlConnection(Conn))
             {
                 dbConnection.Open();
-
-
-                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_log WHERE id = @id", dbConnection))
+                using (SqlCommand command = new SqlCommand("SELECT * FROM shabz_log ORDER BY Date DESC OFFSET 15 * '" + count + "' ROWS FETCH NEXT 15 ROWS ONLY", dbConnection))
                 {
-                    command.Parameters.AddWithValue("@id", id);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            Log log = new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3]));
-
-                            return log;
+                            LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3])));
                         }
                     }
                 }
             }
-
-            return null;
+            return LogList;
         }
+
+        //// GET: api/Log
+        //[HttpGet("/{count}")]
+        //public List<Log> GetLimitedLogs(int count)
+        //{
+        //    LogList.Clear();
+        //    using (SqlConnection dbConnection = new SqlConnection(Conn))
+        //    {
+        //        dbConnection.Open();
+
+        //        using (SqlCommand command = new SqlCommand("SELECT TOP 15 * FROM shabz_log ORDER BY Date", dbConnection))
+        //        {
+        //            command.Parameters.AddWithValue("@count", count);
+        //            using (SqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3])));
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return LogList;
+        //}
 
         // POST: api/Log
         [HttpPost]
@@ -124,8 +142,8 @@ namespace ShabzSmartLock.Controllers
             }
         }
 
-        // DELETE: api/Log
-        [HttpDelete]
+        // DELETE: api/Log/DeleteAll
+        [HttpDelete("/deleteall")]
         public void DeleteAll()
         {
             using (SqlConnection dbConnection = new SqlConnection(Conn))
