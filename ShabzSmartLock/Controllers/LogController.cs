@@ -34,7 +34,7 @@ namespace ShabzSmartLock.Controllers
                     {
                         while (reader.Read())
                         {
-                            LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3])));
+                            LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3]), Convert.ToInt32(reader[4])));
                         }
                     }
                 }
@@ -56,7 +56,7 @@ namespace ShabzSmartLock.Controllers
                     {
                         while (reader.Read())
                         {
-                            LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3])));
+                            LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3]), Convert.ToInt32(reader[4])));
                         }
                     }
                 }
@@ -96,11 +96,12 @@ namespace ShabzSmartLock.Controllers
             {
                 dbConnection.Open();
 
-                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_log (AccountId, Date, Status) VALUES (@accountId, @date, @status)", dbConnection))
+                using (SqlCommand command = new SqlCommand("INSERT INTO shabz_log (AccountId, Date, Status, LockId) VALUES (@accountId, @date, @status, @lockId)", dbConnection))
                 {
                     command.Parameters.AddWithValue("@accountId", log.AccountId);
                     command.Parameters.AddWithValue("@date", DateTime.Parse(log.Date));
                     command.Parameters.AddWithValue("@status", log.Status);
+                    command.Parameters.AddWithValue("@lockId", log.LockId);
                     command.ExecuteNonQuery();
                 }
             }
@@ -114,12 +115,13 @@ namespace ShabzSmartLock.Controllers
             {
                 dbConnection.Open();
 
-                using (SqlCommand command = new SqlCommand("UPDATE shabz_log SET AccountId = @accountId, Date = @date, Status = @status WHERE id = @id", dbConnection))
+                using (SqlCommand command = new SqlCommand("UPDATE shabz_log SET AccountId = @accountId, Date = @date, Status = @status, LockId = @lockId WHERE id = @id", dbConnection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@accountId", log.AccountId);
                     command.Parameters.AddWithValue("@date", DateTime.Parse(log.Date));
                     command.Parameters.AddWithValue("@status", log.Status);
+                    command.Parameters.AddWithValue("@lockId", log.LockId);
                     command.ExecuteNonQuery();
                 }
             }

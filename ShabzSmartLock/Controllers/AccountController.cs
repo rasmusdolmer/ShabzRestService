@@ -112,7 +112,7 @@ namespace ShabzSmartLock.Controllers
                     {
                         while (reader.Read())
                         {
-                            LogController.LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3])));
+                            LogController.LogList.Add(new Log(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), reader[2].ToString(), Convert.ToBoolean(reader[3]), Convert.ToInt32(reader[4])));
                         }
                     }
                 }
